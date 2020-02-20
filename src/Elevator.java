@@ -34,6 +34,7 @@ public class Elevator {
     }
 
     public void tick(){
+        //IDLE
         if(currentState == currentState.IDLE_STATE){
             if(passengers.size() >= 1){
                 currentState = currentState.ACCELERATING;
@@ -43,6 +44,7 @@ public class Elevator {
             }
         }
 
+        //OPENING DOORS
         if(currentState == currentState.DOORS_OPENING){
             currentState = currentState.LOADING_PASSENGERS;
             for(int i : passengers){
@@ -52,6 +54,7 @@ public class Elevator {
             }
         }
 
+        //UNLOADING PASSENGERS
         if(currentState == currentState.UNLOADING_PASSENGERS){
             for(int i : passengers){
                 if(passengers.get(i) == currentFloor){
@@ -85,6 +88,7 @@ public class Elevator {
 
         }
 
+        //LOADING PASSENGERS
         if(currentState == currentState.LOADING_PASSENGERS){
             if(currentDirection == currentDirection.NOT_MOVING){
                 passengers.add(currentBuilding.getFloor(currentFloor).get(0));
@@ -107,6 +111,7 @@ public class Elevator {
             }
         }
 
+        //DOORS CLOSING
         if(currentState == currentState.DOORS_CLOSING){
             if(passengers.size() >= 1){
                 currentState = currentState.ACCELERATING;
@@ -116,8 +121,43 @@ public class Elevator {
             }
         }
 
+        //MOVING
         if(currentState == currentState.MOVING){
+            int nextFloor = 0;
+            if(currentDirection == currentDirection.UP){
+                nextFloor = currentFloor + 1;
+            }
+            else if(currentDirection == currentDirection.DOWN){
+                nextFloor = currentFloor - 1;
+            }
 
+            for(int i : passengers){
+                if(passengers.get(i) == nextFloor){
+                    currentState = currentState.DECELERATING;
+                }
+            }
+
+            if(currentBuilding.getFloor(nextFloor).size() > 0){
+                for(int i : currentBuilding.getFloor(nextFloor)){
+                    if(currentBuilding.getFloor(nextFloor).get(i) > nextFloor && currentDirection == currentDirection.UP){
+                        currentState = currentState.DECELERATING;
+                        break;
+                    }
+                    else if(currentBuilding.getFloor(nextFloor).get(i) < nextFloor && currentDirection == currentDirection.DOWN){
+                        currentState = currentState.DECELERATING;
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        //DECELERATING
+        if(currentState == currentState.DECELERATING){
+            currentState = currentState.DOORS_OPENING;
+            if(passengers.size() == 0){
+                currentDirection = currentDirection.NOT_MOVING;
+            }
         }
 
 
