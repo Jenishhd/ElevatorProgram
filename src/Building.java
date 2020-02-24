@@ -23,18 +23,36 @@ public class Building {
 
     public void tick(){
         int floorRand;
-        for(ArrayList<Integer> x : floors){
-            if(Simulation.mRandom.nextInt(20) == 0){
+        boolean flag = true;
+        for(int i = 0; i < floors.size();i++){
+            if(Simulation.getRandom().nextInt(20) == 0){
+//
                 while(true){
-                   floorRand = Simulation.mRandom.nextInt(floors.size());
-                   if(floorRand != floors.indexOf(x)){
-                       floors.get(floors.indexOf(x)).add(floorRand);
-                       System.out.println("Adding passenger with destination " + floorRand + " to floor " + floors.indexOf(x));
-                       break;
-                   }
+                    floorRand = Simulation.getRandom().nextInt(floors.size());
+                    if(floorRand != i){
+                        floors.get(i).add(floorRand);
+                        break;
+                    }
                 }
+                break;
             }
         }
+
+
+
+//        for(ArrayList<Integer> x : floors){
+//            if(Simulation.getRandom().nextInt(20) == 0){
+//                while(flag){
+//                   floorRand = Simulation.getRandom().nextInt(floors.size());
+//                   if(floorRand != floors.indexOf(x)){
+//                       floors.get(floors.indexOf(x)).add(floorRand);
+//                       break;
+//                       System.out.println("ADDING PASSENGER WITH DESTINATION " + (floorRand+1) + " TO FLOOR " + x.);
+//                   }
+//                }
+//                break;
+//            }
+//        }
         for(Elevator x : numElevator){
             x.tick();
         }
@@ -45,16 +63,20 @@ public class Building {
         String finalStr = "";
         for(int i = floors.size()-1; i >= 0; i--){
             finalStr += i+1 + ": | ";
+            finalStr += " ";
 
             for(int j = 0; j < numElevator.size(); j++){
                 if(numElevator.get(j).getCurrentFloor() == i){
-                    finalStr += "X | ";
+                    finalStr += " X | ";
                 }
                 else
-                    finalStr += "  | ";
+                    finalStr += "   | ";
             }
 
-            finalStr += floors.get(i).toString() +"\n";
+            for(int z = 0; z < floors.get(i).size(); z++){
+                finalStr += (floors.get(i).get(z)+1) +" ";
+            }
+            finalStr += "\n";
         }
 
         for(Elevator x : numElevator){

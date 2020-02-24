@@ -45,9 +45,9 @@ public class Elevator {
         }
 
         //OPENING DOORS
-        if(currentState == currentState.DOORS_OPENING){
+        else if(currentState == currentState.DOORS_OPENING){
             currentState = currentState.LOADING_PASSENGERS;
-            for(int i : passengers){
+            for(int i = 0; i < passengers.size(); i++){
                 if(passengers.get(i) == currentFloor){
                     currentState = currentState.UNLOADING_PASSENGERS;
                 }
@@ -55,23 +55,24 @@ public class Elevator {
         }
 
         //UNLOADING PASSENGERS
-        if(currentState == currentState.UNLOADING_PASSENGERS){
-            for(int i : passengers){
+        else if(currentState == currentState.UNLOADING_PASSENGERS){
+            ArrayList<Integer> temp = new ArrayList<>();
+            for(int i = 0; i < passengers.size(); i++){
                 if(passengers.get(i) == currentFloor){
-                    passengers.remove(i);
+                    temp.add(passengers.get(i));
                 }
             }
+            passengers.removeAll(temp);
 
             if(passengers.size() == 0){
                 currentDirection = currentDirection.NOT_MOVING;
             }
 
-            if(currentDirection == currentDirection.NOT_MOVING){
-                currentState = currentState.LOADING_PASSENGERS;
-            }
+            currentState = currentState.DOORS_CLOSING;
 
-            else if(currentBuilding.getFloor(currentFloor).size() > 0){
-                for(Integer i : currentBuilding.getFloor(currentFloor)){
+            if(currentDirection == currentDirection.NOT_MOVING || currentBuilding.getFloor(currentFloor).size() > 0){
+                currentState = currentState.LOADING_PASSENGERS;
+                for (int i = 0;i < currentBuilding.getFloor(currentFloor).size();i++){
                     if(currentBuilding.getFloor(currentFloor).get(i) > currentFloor && currentDirection == currentDirection.UP){
                         currentState = currentState.LOADING_PASSENGERS;
                         break;
@@ -83,36 +84,60 @@ public class Elevator {
 
                 }
             }
-            else{
-                currentState = currentState.DOORS_CLOSING;}
+
+//            if(currentBuilding.getFloor(currentFloor).size() > 0){
+//                for (int i = 0;i < currentBuilding.getFloor(currentFloor).size();i++){
+//                    if(currentBuilding.getFloor(currentFloor).get(i) > currentFloor && currentDirection == currentDirection.UP){
+//                        currentState = currentState.LOADING_PASSENGERS;
+//                        break;
+//                    }
+//                    else if(currentBuilding.getFloor(currentFloor).get(i) < currentFloor && currentDirection == currentDirection.DOWN){
+//                        currentState = currentState.LOADING_PASSENGERS;
+//                        break;
+//                    }
+//
+//                }
+//            }
+//            else
+//                currentState = currentState.DOORS_CLOSING;
 
         }
 
         //LOADING PASSENGERS
-        if(currentState == currentState.LOADING_PASSENGERS){
-            if(currentDirection == currentDirection.NOT_MOVING){
+        else if(currentState == currentState.LOADING_PASSENGERS){
+            if(currentDirection == currentDirection.NOT_MOVING && currentBuilding.getFloor(currentFloor).isEmpty() == false){
                 passengers.add(currentBuilding.getFloor(currentFloor).get(0));
+
                 if(currentBuilding.getFloor(currentFloor).get(0) > currentFloor){
                     currentDirection = currentDirection.UP;
                 }
                 else{
                     currentDirection = currentDirection.DOWN;
                 }
+
+                currentBuilding.getFloor(currentFloor).remove(0);
             }
 
             if(currentDirection != currentDirection.NOT_MOVING ) {
-                for (Integer i : currentBuilding.getFloor(currentFloor)) {
+                ArrayList<Integer> temp = new ArrayList<>();
+                for (int i = 0;i < currentBuilding.getFloor(currentFloor).size();i++) {
                     if (currentBuilding.getFloor(currentFloor).get(i) > currentFloor && currentDirection == currentDirection.UP) {
                         passengers.add(currentBuilding.getFloor(currentFloor).get(i));
+                        temp.add(currentBuilding.getFloor(currentFloor).get(i));
+
                     } else if (currentBuilding.getFloor(currentFloor).get(i) < currentFloor && currentDirection == currentDirection.DOWN) {
                         passengers.add(currentBuilding.getFloor(currentFloor).get(i));
+                        temp.add(currentBuilding.getFloor(currentFloor).get(i));
                     }
                 }
+                currentBuilding.getFloor(currentFloor).removeAll(temp);
             }
+
+            currentState = currentState.DOORS_CLOSING;
         }
 
         //DOORS CLOSING
-        if(currentState == currentState.DOORS_CLOSING){
+        else if(currentState == currentState.DOORS_CLOSING){
             if(passengers.size() >= 1){
                 currentState = currentState.ACCELERATING;
             }
@@ -122,7 +147,7 @@ public class Elevator {
         }
 
         //MOVING
-        if(currentState == currentState.MOVING){
+        else if(currentState == currentState.MOVING){
             int nextFloor = 0;
             if(currentDirection == currentDirection.UP){
                 nextFloor = currentFloor + 1;
@@ -131,14 +156,16 @@ public class Elevator {
                 nextFloor = currentFloor - 1;
             }
 
-            for(int i : passengers){
+            currentFloor = nextFloor;
+
+            for(int i = 0; i < passengers.size();i++){
                 if(passengers.get(i) == nextFloor){
                     currentState = currentState.DECELERATING;
                 }
             }
 
             if(currentBuilding.getFloor(nextFloor).size() > 0){
-                for(int i : currentBuilding.getFloor(nextFloor)){
+                for(int i = 0; i < currentBuilding.getFloor(nextFloor).size(); i++){
                     if(currentBuilding.getFloor(nextFloor).get(i) > nextFloor && currentDirection == currentDirection.UP){
                         currentState = currentState.DECELERATING;
                         break;
@@ -152,8 +179,12 @@ public class Elevator {
 
         }
 
+        else if(currentState == currentState.ACCELERATING){
+            currentState = currentState.MOVING;
+        }
+
         //DECELERATING
-        if(currentState == currentState.DECELERATING){
+        else if(currentState == currentState.DECELERATING){
             currentState = currentState.DOORS_OPENING;
             if(passengers.size() == 0){
                 currentDirection = currentDirection.NOT_MOVING;
@@ -166,7 +197,12 @@ public class Elevator {
     }
 
     public String toString(){
-        return "Elevator " + (elevatorNumber+1) + " - Floor " + currentFloor + " - " + currentState + " - " + currentDirection + " - Passengers " + currentBuilding.getFloor(currentFloor).toString()+"\n" ;
+        String rStr = "Elevator " + (elevatorNumber+1) + " - Floor " + (currentFloor+1) + " - " + currentState + " - " + currentDirection + " - Passengers [";
+        String sPassenger;
+        for(int i = 0; i < passengers.size(); i++){
+            rStr += (passengers.get(i)+1) + ", ";
+        }
+        return rStr+"]\n";
     }
 
 

@@ -23,12 +23,22 @@ public class Simulation {
 
         System.out.println(simulationBuilding.toString());
 
-        System.out.println("How many ticks would you like to simulate? ");
-        int userTick = scnr.nextInt();
+        int userTick;
 
+        while(true){
+            System.out.println("How many ticks would you like to simulate? - Enter 0 to quit");
+             userTick = scnr.nextInt();
 
-        for(int i = 0; i<userTick; i++ ){
-            simulationBuilding.tick();
+             if(userTick == 0){
+                 System.out.println("Quiting program");
+             }
+             else{
+                 for(int i =0;i<userTick;i++){
+                     System.out.println("Step: " + (i+1));
+                     simulationBuilding.tick();
+                     System.out.println(simulationBuilding.toString());
+                 }
+             }
         }
 
 
