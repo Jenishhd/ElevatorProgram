@@ -9,9 +9,17 @@ public class Simulation {
 
     public static void main(String[] args){
         Scanner scnr = new Scanner(System.in);
+        int userSeed;
+        while(true) {
+            System.out.println("Enter a seed value greater than 0: ");
+            userSeed = scnr.nextInt();
+            if(userSeed <= 0){
+                System.out.println("Please enter a value greater than 0 for the seed.");
+            }
+            else
+                break;
+        }
 
-        System.out.println("Enter a seed value greater than 0: ");
-        int userSeed = scnr.nextInt();
         mRandom = new Random(userSeed);
 
         System.out.println("Enter the number of floors: ");
@@ -31,6 +39,7 @@ public class Simulation {
 
              if(userTick == 0){
                  System.out.println("Quiting program");
+                 break;
              }
              else{
                  for(int i =0;i<userTick;i++){

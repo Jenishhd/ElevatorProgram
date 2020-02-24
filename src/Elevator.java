@@ -47,6 +47,7 @@ public class Elevator {
         //OPENING DOORS
         else if(currentState == currentState.DOORS_OPENING){
             currentState = currentState.LOADING_PASSENGERS;
+
             for(int i = 0; i < passengers.size(); i++){
                 if(passengers.get(i) == currentFloor){
                     currentState = currentState.UNLOADING_PASSENGERS;
@@ -56,6 +57,7 @@ public class Elevator {
 
         //UNLOADING PASSENGERS
         else if(currentState == currentState.UNLOADING_PASSENGERS){
+
             ArrayList<Integer> temp = new ArrayList<>();
             for(int i = 0; i < passengers.size(); i++){
                 if(passengers.get(i) == currentFloor){
@@ -67,11 +69,13 @@ public class Elevator {
             if(passengers.size() == 0){
                 currentDirection = currentDirection.NOT_MOVING;
             }
-
             currentState = currentState.DOORS_CLOSING;
 
-            if(currentDirection == currentDirection.NOT_MOVING || currentBuilding.getFloor(currentFloor).size() > 0){
+            if(currentDirection == currentDirection.NOT_MOVING && currentBuilding.getFloor(currentFloor).size() > 0){
                 currentState = currentState.LOADING_PASSENGERS;
+            }
+
+            else if(currentBuilding.getFloor(currentFloor).size() > 0){
                 for (int i = 0;i < currentBuilding.getFloor(currentFloor).size();i++){
                     if(currentBuilding.getFloor(currentFloor).get(i) > currentFloor && currentDirection == currentDirection.UP){
                         currentState = currentState.LOADING_PASSENGERS;
@@ -85,21 +89,6 @@ public class Elevator {
                 }
             }
 
-//            if(currentBuilding.getFloor(currentFloor).size() > 0){
-//                for (int i = 0;i < currentBuilding.getFloor(currentFloor).size();i++){
-//                    if(currentBuilding.getFloor(currentFloor).get(i) > currentFloor && currentDirection == currentDirection.UP){
-//                        currentState = currentState.LOADING_PASSENGERS;
-//                        break;
-//                    }
-//                    else if(currentBuilding.getFloor(currentFloor).get(i) < currentFloor && currentDirection == currentDirection.DOWN){
-//                        currentState = currentState.LOADING_PASSENGERS;
-//                        break;
-//                    }
-//
-//                }
-//            }
-//            else
-//                currentState = currentState.DOORS_CLOSING;
 
         }
 
